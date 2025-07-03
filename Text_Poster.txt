@@ -1,0 +1,509 @@
+\documentclass[final]{beamer}
+
+\usepackage[scale=0.95 ]{beamerposter} 
+\usetheme[faculty=chemo]{fibeamer} 
+
+\newlength{\sepwid}
+\newlength{\onecolwid}
+\newlength{\twocolwid}
+\newlength{\threecolwid}
+\setlength{\paperwidth}{46.8in} 
+\setlength{\paperheight}{33.1in}
+\setlength{\sepwid}{0.015\paperwidth} 
+\setlength{\onecolwid}{0.21\paperwidth}
+\setlength{\twocolwid}{0.451\paperwidth} 
+\setlength{\threecolwid}{0.678\paperwidth} 
+
+\usepackage[table]{xcolor}
+\usepackage{float} % para usar [H] en la tabla
+\usepackage{tabularx}
+\usepackage{booktabs}
+\usepackage{graphicx}  % Required for including images
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage[spanish]{babel} 
+\usepackage{ragged2e}
+\usepackage{booktabs} 
+
+
+\title{Pruebas no paramétricas: Wilcoxon para muestras pareadas y Kruskal-Wallis } 
+
+\institute{
+{\large F. Aravena$^1$, M. Elizondo$^1$, J. Zuñiga$^2$}\\[1ex]
+Estadística no paramétrica, Universidad Católica del Maule \\[1ex]
+}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\addtobeamertemplate{block end}{}{\vspace*{2ex}} 
+\addtobeamertemplate{block example end}{}{\vspace*{2ex}} 
+\addtobeamertemplate{block alerted end}{}{\vspace*{2ex}} 
+
+\setlength{\belowcaptionskip}{2ex} 
+\setlength\belowdisplayshortskip{2ex} 
+\begin{frame}
+%==========================Begin Head===============================
+\vspace{0.5cm}
+\begin{columns}
+  % Columna 1: Logo centrado verticalmente
+  \begin{column}{0.25\linewidth}
+    \centering
+    \includegraphics[width=5.5cm]{Escudo UCM.png}
+    \hspace{1cm}
+    \includegraphics[width=5.5cm]{QR_NoParametrica.png}
+  \end{column}
+
+  % Columna 2: Título, autor e institución
+  \begin{column}{0.75\linewidth}
+    \centering
+    \usebeamercolor{title in headline}{\color{fg}\Huge{\textbf{\inserttitle}}\\[0.5ex]}
+    \usebeamercolor{author in headline}{\color{fg}\Large{\insertauthor}\\[1ex]}
+    \usebeamercolor{institute in headline}{\color{fg}\large{\insertinstitute}\\[1ex]}
+  \end{column}
+\end{columns}
+\vspace{1cm}
+%==========================End Head===============================
+
+\begin{columns}[t]
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid} % The first column
+
+%----------------------------------------------------------------------------------------
+%	OBJECTIVOS
+%----------------------------------------------------------------------------------------
+
+\begin{exampleblock}{Introducción}
+\justifying
+En investigación estadística, muchas veces los datos no cumplen los supuestos de \textbf{normalidad} o \textbf{homocedasticidad} requeridos por pruebas paramétricas las \textbf{pruebas no paramétricas} son herramientas esenciales para analizar datos \textit{ordinales}, con \textit{outliers} o de \textit{distribuciones desconocidas}.
+
+\vspace{0.5em}
+Este póster presenta dos pruebas fundamentales:
+
+\begin{itemize}
+  \item \textbf{Prueba de Wilcoxon para muestras pareadas:}
+  \begin{itemize}
+    \item Se usa para comparar dos grupos relacionados (ej.: mediciones antes-después).
+    \item Es la alternativa no paramétrica al \textit{t-test} para muestras dependientes.
+  \end{itemize}
+
+  \item \textbf{Prueba de Kruskal-Wallis:}
+  \begin{itemize}
+    \item Diseñada para comparar tres o más grupos independientes.
+    \item Es la versión no paramétrica del \textit{ANOVA} de una vía.
+  \end{itemize}
+\end{itemize}
+
+\vspace{0.5em}
+
+\end{exampleblock}
+
+\begin{exampleblock}{Objetivo}
+
+Proporcionar una guía al aplicar e interpretar estas pruebas en contextos reales, resaltando su utilidad cuando los datos no cumplen supuestos paramétricos.
+\end{exampleblock}
+
+\begin{exampleblock}{Prueba de Wilcoxon para pruebas pareadas}
+\justifying
+
+La prueba de Wilcoxon para muestras apareadas (también conocida como \textit{Wilcoxon signed-rank test}) propuesta por Frank Wilcoxon en 1945, es una prueba no paramétrica utiliza para comparar dos mediciones relacionadas, como puntajes antes y después de un tratamiento.
+
+A diferencia del t-test pareado, esta prueba no evalúa diferencias de medias, sino de medianas, utilizando los rangos de las diferencias. Es adecuada cuando los datos son ordinales o continuos con outliers, y especialmente útil con muestras pequeñas (\(n < 20\)). Para tamaños mayores (\(n \geq 20\)), puede aplicarse una aproximación normal mediante el teorema central del límite. \cite{ramirez1993}
+
+\textbf{Supuestos:}
+\begin{itemize}
+
+  \item No requiere normalidad
+  \item Muestras pareadas o dependientes.
+  \item Variable continua u ordinal.
+  
+\end{itemize}
+
+\textbf{Aplicaciones comunes:}
+\begin{itemize}
+  \item \textit{Estudios antes-después:} Evaluar el efecto de un tratamiento médico.
+  \item \textit{Comparación de dos condiciones en los mismos sujetos:} Por ejemplo, presión arterial en reposo vs. estrés.
+\end{itemize}
+
+
+\end{exampleblock}
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of the first column
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\twocolwid} % Begin a column which is two columns wide (column 2)
+
+\begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column
+
+\begin{column}{\onecolwid}\vspace{-.74in} % The first column within column 2 (column 2.1)
+
+
+
+\begin{exampleblock}{Hipótesis}
+\begin{table}[H]
+\centering
+\rowcolors{2}{gray!10}{white}
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{>{\bfseries}c c c}
+\rowcolor{gray!30}
+Caso & Hipótesis nula (\(H_0\)) & Hipótesis alternativa (\(H_1\)) \\
+A) & \( \theta_y = \theta_x \) & \( \theta_y \neq \theta_x \) \\
+B) & \( \theta_y \leq \theta_x \) & \( \theta_y > \theta_x \) \\
+C) & \( \theta_y \geq \theta_x \) & \( \theta_y < \theta_x \) \\
+\end{tabular}
+\caption{Formulaciones de hipótesis para prueba de Wilcoxon para muestras pareadas}
+\end{table}
+
+\vspace{-0.8em}
+    
+\end{exampleblock}
+\vspace{-0.8em}
+\begin{exampleblock}{Procedimiento manual: Prueba de Wilcoxon}
+
+\begin{enumerate}
+  \item \textbf{Calcular diferencias:} Para cada par de observaciones, se calcula:
+  \[
+  D_i = X_{i1} - X_{i2}, \quad i = 1, 2, \ldots, n
+  \]
+
+  \item \textbf{Eliminar diferencias cero:} Si alguna diferencia es \( D_i = 0 \), se excluye del análisis.
+
+  \item \textbf{Ordenar valores absolutos:} Se rankean los valores \( |D_i| \) de menor a mayor, asignando rangos.\\
+  \textit{Nota: Si existen dos o más diferencias con igual magnitud y dirección, se asigna a cada una el rango promedio que les correspondería si no hubieran sido iguales. \cite{ojeda2013}}
+
+  \item \textbf{Asignar signos:} A cada rango se le asocia el signo de \( D_i \).
+
+  \item \textbf{Calcular estadístico:}
+  \[
+  T = \sum_{i=1}^{n} R_i^+, \quad \text{donde} \quad
+  R_i^+ =
+    \begin{cases}
+      0 & \text{si } D_i \leq 0 \\
+      \text{rango de } |D_i| & \text{si } D_i > 0
+    \end{cases}
+  \]
+
+  \item \textbf{Regla de decisión:} Los valores críticos se obtienen a través de la tabla de Wilcoxon considerando \( n^* \) (número de diferencias distintas de cero) y \( \alpha \). La regla de decisión es:
+
+  \begin{table}[H]
+  \centering
+  \footnotesize
+  \renewcommand{\arraystretch}{1.2}
+  \begin{tabular}{>{\bfseries}l l}
+  a) & Rechazar \( H_0 \) si \( T < T_{\alpha/2}(n^*) \) o \( T > T_{1 - \alpha/2}(n^*) \) \\
+  b) & Rechazar \( H_0 \) si \( T > T_{1 - \alpha}(n^*) \) \\
+  c) & Rechazar \( H_0 \) si \( T < T_{\alpha}(n^*) \) \\
+  \end{tabular}
+  \end{table}
+
+\end{enumerate}
+\end{exampleblock}
+
+\begin{exampleblock}{Ejercicio de la prueba de Wilcoxon}
+
+Un grupo de psicólogos evaluó a personas próximas a jubilarse, con el objetivo de determinar si su salud mental tiende a ser inferior después del retiro. Para ello, se midió el puntaje de salud mental antes y después del retiro en una muestra de individuos.
+
+\[
+H_0: \theta_Y \geq \theta_X \quad    
+H_a: \theta_Y < \theta_X \quad 
+\]
+    
+\begin{table}[H]
+\centering
+\scriptsize
+\setlength{\tabcolsep}{3pt} % reduce espacio entre columnas
+\renewcommand{\arraystretch}{1.1} % espacio vertical
+\rowcolors{2}{gray!10}{white}
+\begin{tabular}{lccccccccccccccc}
+\rowcolor{gray!30}
+\textbf{Individuo} & 1 & 2 & 3 & 4 & 5 & 6 & 7 & 8 & 9 & 10 & 11 & 12 & 13 & 14 & 15 \\
+Después (\(Y\)) & 70 & 75 & 84 & 90 & 81 & 95 & 87 & 72 & 92 & 85 & 88 & 76 & 85 & 81 & 84 \\
+Antes (\(X\)) & 76 & 80 & 86 & 87 & 85 & 95 & 97 & 75 & 87 & 96 & 98 & 77 & 80 & 87 & 89 \\
+\(Y - X\) & -6 & -5 & -2 & +3 & -4 & 0 & -10 & -3 & +5 & -11 & -10 & -1 & +5 & -6 & -5 \\
+Rango & 10.5 & 7.5 & 3.5 & 5 & 7.5 &    & 12.5 & 3.5 & 10.5 & 14 & 12.5 & 1 & 10.5 & 10.5 & 7.5 \\
+Signo & - & - & - & + & - &   & - & - & + & - & - & - & + & - & -
+\end{tabular}
+\caption{\footnotesize Prueba de Wilcoxon. \textit{Fuente:} \cite{ramirez1993}.}
+
+
+\end{table}
+\vspace{-0.8em}
+
+Consecuentemente, tenemos que:
+\vspace{-0.8em}
+\[
+T = 18.5 \quad \text{y} \quad n^* = 14
+\]
+
+Siendo \( \alpha = 0.05 \), el valor crítico de Wilcoxon es:
+\vspace{-0.8em}
+\[
+W_{0.05}(14) = 26
+\]
+\end{exampleblock}
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of column 2.1
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid}\vspace{-.74in} % The second column within column 2 (column 2.2)
+
+%----------------------------------------------------------------------------------------
+
+
+\begin{exampleblock}
+    
+Como \( T = 18.5 < 26 \), se \textbf{rechaza la hipótesis nula} \( H_0 \). 
+
+Se implemento R utilizando la función \texttt{wilcox.test()}. 
+
+\medskip
+\begin{table}[H]
+\centering
+\renewcommand{\arraystretch}{1.2}
+\begin{tabular}{lc}
+\toprule
+Estadístico V & p-valor \\
+18.5 & 0.0349 \\
+\bottomrule
+\end{tabular}
+\caption{Resultados de la prueba de Wilcoxon en R}
+\end{table}
+\textit{Conclusión:} Con un nivel de significancia del 5\%, se concluye que el nivel de salud mental de la población tiende a ser \textbf{inferior después del retiro}.
+\end{exampleblock}
+
+\begin{exampleblock}{Prueba de Kruskal-Wallis}
+\justifying
+\section*{Prueba de Kruskal-Wallis}
+
+La prueba de Kruskal-Wallis es una técnica no paramétrica, que vendria siendo la version no parametrica del ANOVA de una via, que se utiliza para comparar tres o más grupos independientes cuando la variable de interés es ordinal o continua y los datos no cumplen con el supuesto de normalidad. Evalúa si existen diferencias significativas entre las medianas de los grupos, basándose en rangos en lugar de los valores originales.
+
+Es ideal para muestras pequeñas, datos sesgados o con valores atípicos.
+
+\textbf{Supuestos}
+    
+\begin{itemize}
+  \item No requiere normalidad
+  \item Los grupos deben ser independientes
+  \item Se aplica a tres o más grupos
+  \item Variable dependiente ordinal o continua
+\end{itemize}
+
+\vspace{0.5em}
+\end{exampleblock}
+
+\begin{exampleblock}{Hipótesis}
+    
+\begin{table}[H]
+\centering
+\footnotesize
+\renewcommand{\arraystretch}{1.3}
+\begin{tabular}{>{\bfseries}l l}
+Hipótesis nula (\(H_0\)) & No hay diferencias significativas entre los grupos: \\
+                         & \( \mu_1 = \mu_2 = \dots = \mu_k \) \\
+Hipótesis alternativa (\(H_1\)) & Al menos una mediana es diferente: \\
+                                & \( \mu_i \neq \mu_j \) para algún \( i \neq j \) \\
+\end{tabular}
+\end{table}
+
+\vspace{0.5em}
+\textbf{Cálculo del estadístico:}
+\vspace{-0.5em}
+\[
+H = \frac{12}{N(N+1)} \sum_{j=1}^{k} \left( \frac{R_j^2}{n_j} \right) - 3(N+1)
+\]
+
+\begin{itemize}
+  \item \( N \): número total de observaciones en todos los grupos
+  \item \( n_j \): número de observaciones en el grupo \( j \)
+  \item \( k \): número de grupos
+  \item \( R_j \): suma de los rangos en el grupo \( j \)
+\end{itemize}
+
+\vspace{0.5em}
+\textbf{Región de rechazo:}
+
+\begin{itemize}
+  \item Se compara \( H \) con el valor crítico de una \( \chi^2 \) con \( k - 1 \) grados de libertad:
+  \begin{itemize}
+    \item Si \( H > \chi^2_{k - 1} \): se rechaza \( H_0 \)
+    \item Si \( H \leq \chi^2_{k - 1} \): no se rechaza \( H_0 \)
+  \end{itemize}
+  \item También se puede usar el valor-\( p \):
+  \begin{itemize}
+    \item Si \( p\text{-valor} < \alpha \): se rechaza \( H_0 \)
+    \item Si \( p\text{-valor} \geq \alpha \): no se rechaza \( H_0 \)
+  \end{itemize}
+\end{itemize}
+
+
+\end{exampleblock}
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of column 2.2
+
+\end{columns} % End of the split of column 2 - any content after this will now take up 2 columns width
+
+
+
+\begin{columns}[t,totalwidth=\twocolwid] % Split up the two columns wide column again
+
+\begin{column}{\onecolwid} % The first column within column 2 (column 2.1)
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of column 2.1
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid} % The second column within column 2 (column 2.2)
+
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of column 2.2
+
+\end{columns} % End of the split of column 2
+
+\end{column} % End of the second column
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\begin{column}{\onecolwid} % The third column
+
+%----------------------------------------------------------------------------------------
+%----------------------------------------------------------------------------------------
+
+
+\begin{exampleblock}{Ejercicio de la prueba de Kruskal-Wallis}
+
+Un investigador desea comparar la efectividad de \textbf{cuatro tratamientos distintos} (A, B, C y D) aplicados a un grupo de pacientes. 
+
+\vspace{0.5em}
+\textbf{Datos observados:}
+
+\begin{table}[H]
+\centering
+\scriptsize
+\renewcommand{\arraystretch}{1.2}
+\setlength{\tabcolsep}{4pt}
+\rowcolors{2}{gray!10}{white}
+\begin{tabular}{>{\columncolor{gray!30}}c c c >{\columncolor{gray!30}}c c c >{\columncolor{gray!10}}c c c >{\columncolor{gray!10}}c c}
+\rowcolor{gray!30}
+\textbf{Tratamiento A} & \textbf{R\_A} & ~ & \textbf{Tratamiento B} & \textbf{R\_B} & ~ & \textbf{Tratamiento C} & \textbf{R\_C} & ~ & \textbf{Tratamiento D} & \textbf{R\_D} \\
+68 & \textbf{1}   & ~ & 80 & \textbf{13}  & ~ & 74 & \textbf{9}   & ~ & 92 & \textbf{20} \\
+72 & \textbf{6.5} & ~ & 85 & \textbf{15}  & ~ & 70 & \textbf{3.5} & ~ & 88 & \textbf{17} \\
+75 & \textbf{10}  & ~ & 78 & \textbf{11}  & ~ & 69 & \textbf{2}   & ~ & 90 & \textbf{19} \\
+70 & \textbf{3.5} & ~ & 83 & \textbf{14}  & ~ & 72 & \textbf{6.5} & ~ & 89 & \textbf{18} \\
+73 & \textbf{8}   & ~ & 79 & \textbf{12}  & ~ & 71 & \textbf{5}   & ~ & 87 & \textbf{16} \\
+\rowcolor{orange!10}
+\textbf{R\textsubscript{j}} & \textcolor{red}{\textbf{29}} & ~ &
+~ & \textcolor{red}{\textbf{65}} & ~ &
+~ & \textcolor{red}{\textbf{26}} & ~ &
+~ & \textcolor{red}{\textbf{90}} \\
+\end{tabular}
+\caption{\footnotesize Valores observados, rangos asignados y suma de rangos por grupo (A, B, C, D).}
+\end{table}
+
+\end{exampleblock}
+
+\vspace{-0.8em}
+
+\begin{exampleblock}{Prueba de Kruskal-Wallis: Cálculo e interpretación}
+
+\textbf{Hipótesis:}
+\[
+H_0: \mu_A = \mu_B = \mu_C = \mu_D \qquad
+H_a: \mu_i \ne \mu_j \quad \text{para algún par } i \ne j
+\]
+
+\vspace{-0.8em}
+
+\textbf{Estadístico de prueba:}
+\[
+H = \frac{12}{20(20+1)} \left( \frac{29^2 + 65^2 + 26^2 + 90^2}{5} \right) - 3(20+1)
+\]
+\[
+H \approx 16.18
+\]
+
+\vspace{-1em}
+
+\textbf{Valor-p:}
+\[
+p = 1 - P\left(\chi^2_{(3)} \leq 16.18\right) \approx 0.001
+\]
+
+Se implemento R utilizando la función \texttt{kruskal.test()}. 
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+Estadístico H & Grados de libertad (gl) & p-valor \\
+\hline
+16.121 & 3 & 0.0011 \\
+\hline
+\end{tabular}
+\caption{Resultados de la prueba de Kruskal-Wallis}
+\end{table}
+
+\vspace{-0.5em}
+
+\textit{Conclusión:} Con un nivel de significancia del 5\%, se \textbf{rechaza \( H_0 \)}. Existe suficiente evidencia muestral para concluir que al menos uno de los tratamientos difiere significativamente de los demás.
+
+\end{exampleblock}
+
+\vspace{-0.8em}
+
+\begin{exampleblock}{Conclusiones}
+\justifying
+
+\begin{itemize}
+  \item \textbf{Wilcoxon} es óptima para diseños antes-después o experimentales con muestras dependientes.
+  
+  \item \textbf{Kruskal-Wallis} es la opción preferida para comparar múltiples tratamientos, categorías o poblaciones independientes.
+  
+  \item Ambas pruebas son fáciles de implementar en \textbf{RStudio}, utilizando funciones integradas como \texttt{wilcox.test()} y \texttt{kruskal.test()}, junto con visualizaciones claras como \textit{boxplots} o gráficos de perfiles.
+\end{itemize}
+
+\end{exampleblock}
+
+
+\vspace{-0.5em}
+
+%----------------------------------------------------------------------------------------
+%	REFERENCES
+%----------------------------------------------------------------------------------------
+
+\begin{exampleblock}{Referencias}
+
+\nocite{*} % Insert publications even if they are not cited in the poster
+\small{\bibliographystyle{unsrt}
+\bibliography{sample}\vspace{1cm}}
+\end{exampleblock}
+
+%----------------------------------------------------------------------------------------
+%	Códigos y contacto
+%----------------------------------------------------------------------------------------
+
+
+
+%----------------------------------------------------------------------------------------
+
+\end{column} % End of the third column
+
+\begin{column}{\sepwid}\end{column} % Empty spacer column
+
+\end{columns} % End of all the columns in the poster
+
+\end{frame} % End of the enclosing frame
+%\end{darkframes} % Uncomment for dark theme
+\end{document}
